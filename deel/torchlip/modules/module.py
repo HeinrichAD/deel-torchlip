@@ -35,6 +35,7 @@ import math
 from typing import Any
 
 import numpy as np
+from collections import OrderedDict
 from torch.nn import Sequential as TorchSequential
 
 logger = logging.getLogger("deel.torchlip")
@@ -123,4 +124,4 @@ class Sequential(TorchSequential, LipschitzModule):
                 layers.append((name, layer.vanilla_export()))
             else:
                 layers.append((name, copy.deepcopy(layer)))
-        return TorchSequential(*layers)
+        return TorchSequential(OrderedDict(layers))

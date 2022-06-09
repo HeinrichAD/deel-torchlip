@@ -60,6 +60,18 @@ The following table indicates which module are safe to use in a Lipschitz networ
      - yes
      - n/a
      -
+   * - :class:`ReLU`\ :raw-html-m2r:`<br>`\ :class:`ELU`
+     - yes
+     - n/a
+     - :class:`LeakyReLU` and :class:`PReLU` need to be properly parameterized
+   * - :raw-html-m2r:`<br>`\ :class:`Sigmoid`\ :raw-html-m2r:`<br>`\ :class:`LogSigmoid`
+     - yes
+     - n/a
+     -
+   * - :class:`Tanh`
+     - yes
+     - n/a
+     -
    * - :class:`torch.nn.Dropout`
      - no
      - None

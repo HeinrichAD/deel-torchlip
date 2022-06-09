@@ -118,9 +118,9 @@ class Sequential(TorchSequential, LipschitzModule):
             A Vanilla torch.nn.Sequential model.
         """
         layers = []
-        for layer in self.children():
+        for name, layer in self.named_children():
             if isinstance(layer, LipschitzModule):
-                layers.append(layer.vanilla_export())
+                layers.append((name, layer.vanilla_export()))
             else:
-                layers.append(copy.deepcopy(layer))
+                layers.append((name, copy.deepcopy(layer)))
         return TorchSequential(*layers)

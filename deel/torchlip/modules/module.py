@@ -35,8 +35,9 @@ import math
 from typing import Any
 
 import numpy as np
-from collections import OrderedDict
+import torch
 from torch.nn import Sequential as TorchSequential
+from collections import OrderedDict
 
 logger = logging.getLogger("deel.torchlip")
 
@@ -92,6 +93,30 @@ class Sequential(TorchSequential, LipschitzModule):
         """
         TorchSequential.__init__(self, *args)
         LipschitzModule.__init__(self, k_coef_lip)
+        
+        def isTorchModuleAlreadyLipschitz(module: torch.nn.Module) -> bool:
+            """
+            Check if PyTorch module is safe to use (already 1-Lipschitz).
+            See table in documentation:
+            https://deel-ai.github.io/deel-torchlip/basic_example.html#which-modules-are-safe-to-use
+
+            Args:
+                module (TorchModule): PyTorch module
+
+            Returns:
+                bool: True if module is already Lipschitz; otherwise False
+            """
+            supported = [
+                torch.nn.MaxPool1d, torch.nn.MaxPool2d, torch.nn.MaxPool3d,
+                torch.nn.Flatten,
+                torch.nn.ReLU, torch.nn.ELU,
+                torch.nn.Sigmoid, torch.nn.LogSigmoid,
+                torch.nn.Tanh
+            ]
+            for module_cls in supported:
+                if isinstance(module, module_cls):
+                    return True
+            return False
 
         # Force the Lipschitz coefficient:
         n_layers = np.sum(
@@ -100,6 +125,8 @@ class Sequential(TorchSequential, LipschitzModule):
         for module in self.children():
             if isinstance(module, LipschitzModule):
                 module._coefficient_lip = math.pow(k_coef_lip, 1 / n_layers)
+            elif isinstance(module, torch.nn.module) and isTorchModuleAlreadyLipschitz(module):
+                pass
             else:
                 logger.warning(
                     "Sequential model contains a layer which is not a Lipschitz layer: {}".format(  # noqa: E501

@@ -125,7 +125,7 @@ class Sequential(TorchSequential, LipschitzModule):
         for module in self.children():
             if isinstance(module, LipschitzModule):
                 module._coefficient_lip = math.pow(k_coef_lip, 1 / n_layers)
-            elif isinstance(module, torch.nn.module) and isTorchModuleAlreadyLipschitz(module):
+            elif isinstance(module, torch.nn.Module) and isTorchModuleAlreadyLipschitz(module):
                 pass
             else:
                 logger.warning(

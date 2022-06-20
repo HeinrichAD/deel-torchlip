@@ -67,6 +67,7 @@ def evaluate_lip_const(
         inaccurate in high dimensional space.
 
     """
+    eps = torch.Tensor([eps]).to(x.device).squeeze()
     y_pred = model(x.float())
 
     with torch.random.fork_rng():
